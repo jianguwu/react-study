@@ -1,8 +1,0 @@
-.is-done span{
-  text-decoration: line-through;
-  color: gray;
-}
-
-.is-done button{
-  cursor: not-allowed;
-}

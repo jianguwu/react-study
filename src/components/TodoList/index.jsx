@@ -1,13 +1,16 @@
 import React, { Component } from 'react'
 
-import './index.css'
+import FormField from '../FormField'
+
+import './index.less'
 
 export default class TodoList extends Component {
 
   constructor() {
-    super()
+    super(...arguments)
       this.state = {
-        todoItems: []
+        todoItems: [],
+        inputValue: ''
       }
 
       this.input = React.createRef()
@@ -16,36 +19,35 @@ export default class TodoList extends Component {
 
 
   render() {
+
     return (
       <div className='todo-container'>
         <header>
-          <input type="text" ref={this.input} /> <button onClick={this.addItem}>add item</button>
+          <FormField type="text" value={this.state.inputValue} label="todo-item：" name={'input'} updateField={value => this.updateField('inputValue', value)} />
+          <button onClick={this.addItem}>add item</button>
         </header>
         <section>
           <ul className='todo-ul'>
             {
               this.state.todoItems.map((item, index) =>
                 <li className={item.done ? 'is-done' : ''} key={item.id}>
+                  <input type="checkbox" checked={item.done} onChange={this.toggleItemChecked.bind(this, index)} />
                   <span>{item.value}</span>
                   <button onClick={this.removeItem.bind(this.addItem, index)}>delete</button>
-                  {!item.done && <button onClick={this.doneItem.bind(this, index)}>{item.done ? 'isDone' : 'done'}</button>}
                 </li>
               )
             }
           </ul>
-          { !this.state.todoItems.length && <div>暂无待办事项！</div>}
-          {this.toggleTag.bind(this, 0)}
+          { !this.state.todoItems.length && <div>there is nothing to do!</div>}
         </section>
       </div>
     )
   }
 
   addItem = ()=> {
-    const value = this.input.current.value;
     const _todoItems = this.state.todoItems.slice();
-    _todoItems.push({id: ++this.globalIndex, value, done: false })
-    this.setState({todoItems: _todoItems})
-    this.input.current.value = ''
+    _todoItems.push({id: ++this.globalIndex, value: this.state.inputValue, done: false })
+    this.setState({todoItems: _todoItems, inputValue: ''})
   }
 
   removeItem = (index) => {
@@ -54,9 +56,17 @@ export default class TodoList extends Component {
     this.setState({todoItems: _todoItems});
   }
 
-  doneItem = (index) => {
+  toggleItemChecked = (index) => {
     let _todoItems = this.state.todoItems.slice();
-    _todoItems[index].done = true;
+    _todoItems[index].done = !_todoItems[index].done;
     this.setState({todoItems: _todoItems});
+  }
+
+  updateField = (key, name) => {
+    this.setState({
+      [key]: name
+    },() => {
+      console.log(this.state);
+    })
   }
 }
